@@ -1,0 +1,30 @@
+@(blog: Blog,comment: Form[CommentForm],comments: Seq[Comment])(implicit messages: Messages)
+
+@import helper._
+
+@main("Welcome to Play") {
+	<div>
+	  @blog.title
+	</div>
+	<div>
+		@blog.content
+	</div>
+
+	@form(routes.BlogController.addComment(blog.id.toString())) {
+		@inputText(comment("name"))
+		@inputText(comment("content"))
+
+		<div class="buttons">
+			<input type="submit" value="Add Comment"/>
+		</div>
+	}
+
+	<ul id="comments">
+		@comments.map {comment =>
+		 	<div>@comment.name</div>
+			<div>@comment.content</div>
+			<div>@comment.date</div>
+			<br>
+		}
+	</ul>
+}

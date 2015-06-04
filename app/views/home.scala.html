@@ -1,0 +1,29 @@
+@(blogs: Seq[Blog])
+
+@import helper._
+
+@main("Welcome to Play") {
+	<ul id="blogs">
+		@blogs.map { blog =>
+			<li>
+				<div class="title">
+					<a href="/blog/@blog.id">@blog.title</a>
+				</div>
+				<div class="content">@blog.content</div>
+				<div class="date">@blog.date</div>
+				<div>
+					<form method="POST" action="/delete/@blog.id">
+						<div class="buttons">
+							<input value="Delete" type="submit">
+						</div>
+					</form>
+					<form method="GET" action="/update/@blog.id">
+						<div class="buttons">
+							<input value="Update" type="submit">
+						</div>
+					</form>
+				</div>
+			</li>
+		}
+	</ul>
+}

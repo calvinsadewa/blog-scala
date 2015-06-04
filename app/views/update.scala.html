@@ -1,0 +1,14 @@
+@(blog: Form[CreateBlogForm], id:String)(implicit messages: Messages)
+
+@import helper._
+
+@main("Welcome to Play") {
+	@form(routes.BlogController.updateBlog(id)) {
+		@inputText(blog("title"))
+		@inputText(blog("content"))
+
+		<div class="buttons">
+			<input type="submit" value="update Blog"/>
+		</div>
+	}
+}
