@@ -12,6 +12,8 @@ GET     /update/*id                 controllers.BlogController.updatePage(id)
 POST    /update/*id                 controllers.BlogController.updateBlog(id)
 POST    /add_comment/*id_blog       controllers.BlogController.addComment(id_blog)
 GET     /blogs                      controllers.BlogController.getBlogs
+POST    /search                     controllers.BlogController.searchBlog
+GET     /search                     controllers.BlogController.search
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

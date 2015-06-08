@@ -1,0 +1,13 @@
+@(blog: Form[SearchForm])(implicit messages: Messages)
+
+@import helper._
+
+@main("Welcome to Play") {
+  @form(routes.BlogController.searchBlog()) {
+		@inputText(blog("search"))
+
+		<div class="buttons">
+			<input type="submit" value="Search Blog"/>
+		</div>
+	}
+}

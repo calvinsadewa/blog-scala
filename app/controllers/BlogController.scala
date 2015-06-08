@@ -2,7 +2,11 @@ package controllers
 
 import javax.inject.Inject
 
+import akka.actor.{Props, ActorSystem}
+import akka.pattern.ask
+import akka.util.Timeout
 import dal.{CommentRepository, BlogRepository}
+import models.Blog
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
@@ -14,6 +18,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import scala.text
 
+import search._
 /**
  * Created by calvin-pc on 6/3/2015.
  */
@@ -38,6 +43,15 @@ class BlogController @Inject() (blogRepo:BlogRepository, comRepo:CommentReposito
       "name" -> nonEmptyText,
       "content" -> nonEmptyText
     )(CommentForm.apply)(CommentForm.unapply)
+  }
+
+  /**
+   * mapping for search form
+   */
+  val searchForm: Form[SearchForm] = Form {
+    mapping(
+      "search" -> nonEmptyText
+    )(SearchForm.apply)(SearchForm.unapply)
   }
 
   /**
@@ -149,8 +163,36 @@ class BlogController @Inject() (blogRepo:BlogRepository, comRepo:CommentReposito
         })
       }
     )
+  }
 
+  /**
+   * REST endpoint that search blog
+   */
+  def searchBlog() = Action.async { implicit request =>
+    searchForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.search(errorForm)))
+      },
+      search => {
+        implicit val timeout = Timeout(5 seconds)
+        var system = ActorSystem()
+        var listener = system.actorOf(Props(new SearchListener()))
+        var master = system.actorOf(Props(new SearchMaster(1,1,listener,blogRepo)))
+        master ! Search(search.search)
+        ask(listener,Search("")).map(blogList =>
+          Ok(views.html.home(blogList.asInstanceOf[Seq[Blog]]))
+        )
+      }
+    )
+  }
+
+  /**
+   * Search action
+   */
+  def search = Action {
+    Ok(views.html.search(searchForm))
   }
 }
 case class CreateBlogForm(title: String, content: String)
 case class CommentForm(name: String, content: String)
+case class SearchForm(search: String)
