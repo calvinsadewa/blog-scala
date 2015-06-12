@@ -82,7 +82,7 @@ class BlogRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, comRep
   /**
    * Delete the blog in the database with given id, sychronous.
    */
-  def deleteByID(id : Long) :Unit = db.run {
+  def deleteByID(id : Long) :Future[_] = db.run {
     comRepo.deleteByIdBlog(id)
     blogs.filter(_.id === id).delete
   }
@@ -97,7 +97,7 @@ class BlogRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, comRep
   /**
    * update blog with given id in database, asynchronus.
    */
-  def updateBlogById(id: Long, title: String, content: String) : Unit = db.run {
+  def updateBlogById(id: Long, title: String, content: String) : Future[_] = db.run {
     val q = for { b <- blogs if b.id === id } yield (b.title,b.content)
     q.update((title,content))
   }

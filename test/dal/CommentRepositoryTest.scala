@@ -20,13 +20,13 @@ class CommentRepositoryTest extends Specification with Mockito{
       val repo = play.api.Application.instanceCache[CommentRepository](implicitly).apply(play.api.Play.current)
       repo.create(1,"Bunga","Baru")
       Thread.sleep(500)
-      var result = Await.result(repo.list(1),10000 seconds)
+      var result = Await.result(repo.list(1),10 seconds)
       result.exists(comm => comm.id_blog == 1
         && comm.name.eq("Bunga")
         && comm.content.eq("Baru")) mustEqual(true)
       repo.deleteByIdBlog(1)
       Thread.sleep(500)
-      result = Await.result(repo.list(1),10000 seconds)
+      result = Await.result(repo.list(1),10 seconds)
       result.exists(comm => comm.id_blog == 1) mustEqual(false)
     }
   }

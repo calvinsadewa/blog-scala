@@ -75,7 +75,7 @@ class CommentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
   /**
    * Delete all comment associated with blog id, synchronous
    */
-   def deleteByIdBlog(id_blog : Long) :Unit = db.run {
+   def deleteByIdBlog(id_blog : Long) :Future[_] = db.run {
      comments.filter(_.id_blog === id_blog).delete
    }
  }

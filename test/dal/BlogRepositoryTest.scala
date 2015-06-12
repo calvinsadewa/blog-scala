@@ -21,25 +21,25 @@ import scalaz.Inject
  * Created by calvin-pc on 6/4/2015.
  */
 @RunWith(classOf[JUnitRunner])
-class BlogControllerTest extends Specification with Mockito{
+class BlogRepositoryTest extends Specification with Mockito{
   "BlogRepository" should {
 
     "able to add, find, update and delete" in new WithApplication() {
       val repo = play.api.Application.instanceCache[BlogRepository](implicitly).apply(play.api.Play.current)
       repo.create("Bunga","Baru")
       Thread.sleep(500)
-      var result = Await.result(repo.list(),10000 seconds)
+      var result = Await.result(repo.list(),10 seconds)
       result.exists(blog => blog.title.eq("Bunga") && blog.content.eq("Baru")) mustEqual(true)
       val id = result.filter(blog => blog.title.eq("Bunga") && blog.content.eq("Baru")).head.id
       repo.updateBlogById(id,"Gajah","Terbang")
       Thread.sleep(500)
-      result = Await.result(repo.list(),10000 seconds)
+      result = Await.result(repo.list(),10 seconds)
       result.exists(blog => blog.title.eq("Gajah")
         && blog.content.eq("Terbang")
         && blog.id == id) mustEqual(true)
       repo.deleteByID(id)
       Thread.sleep(500)
-      result = Await.result(repo.list(),10000 seconds)
+      result = Await.result(repo.list(),10 seconds)
       result.exists(blog => blog.id == id) mustEqual(false)
     }
   }

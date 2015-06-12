@@ -35,7 +35,7 @@ class BlogControllerTest extends Specification with Mockito{
       val home = route(FakeRequest(GET, "/home")).get
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain(Await.result(mockBRepo.list(),1000 seconds).last.title)
+      contentAsString(home) must contain(Await.result(mockBRepo.list(),10 seconds).last.title)
     }
 
     "show add blog page" in new WithApplication(application){

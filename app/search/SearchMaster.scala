@@ -10,9 +10,10 @@ import scala.concurrent.duration._
 /**
  * Created by calvin-pc on 6/8/2015.
  */
-class SearchMaster (nrOfWorker: Int, nrOfElement: Int, listener: ActorRef, blogRepo: BlogRepository)
+class SearchMaster (nrOfWorker: Int, nrOfElement: Int)
   extends Actor{
 
+  var listener:ActorRef = _
   var result: Seq[Blog] = Seq()
   var nrOfResult: Int = 0
   var nrOfExpected: Int = 0
@@ -22,14 +23,15 @@ class SearchMaster (nrOfWorker: Int, nrOfElement: Int, listener: ActorRef, blogR
     Props[SearchWorker].withRouter(RoundRobinRouter(nrOfWorker)), name = "workerRouter")
 
   def receive = {
-    case Search(searchString) => {
-      var list = Await.result(blogRepo.list(),1000 minutes)
+    case Search(searchString,blogList) => {
+      var list = blogList
       var iterate = list.length/nrOfElement
       for (i <- 0 until iterate) {
         workerRouter ! Work(searchString, list.take(nrOfElement))
         list = list.drop(nrOfElement)
       }
       nrOfExpected = iterate
+      listener = sender()
     }
 
     case Result(blogList) => {

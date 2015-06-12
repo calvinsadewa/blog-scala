@@ -174,14 +174,12 @@ class BlogController @Inject() (blogRepo:BlogRepository, comRepo:CommentReposito
         Future.successful(Ok(views.html.search(errorForm)))
       },
       search => {
-        implicit val timeout = Timeout(5 seconds)
-        var system = ActorSystem()
-        var listener = system.actorOf(Props(new SearchListener()))
-        var master = system.actorOf(Props(new SearchMaster(1,1,listener,blogRepo)))
-        master ! Search(search.search)
-        ask(listener,Search("")).map(blogList =>
-          Ok(views.html.home(blogList.asInstanceOf[Seq[Blog]]))
-        )
+        blogRepo.list().map( blogList => {
+          implicit val timeout = Timeout(5 seconds)
+          var system = ActorSystem()
+          var master = system.actorOf(Props(new SearchMaster(1,1)))
+          master ? Search(search.search,blogList)
+        }).map(blogList => Ok(views.html.home(blogList.asInstanceOf[Seq[Blog]])))
       }
     )
   }
